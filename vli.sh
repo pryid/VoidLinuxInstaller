@@ -221,6 +221,7 @@ EOF
   ln -s /etc/sv/polkitd /etc/runit/runsvdir/default/
   ln -s /etc/sv/seatd /etc/runit/runsvdir/default/
   ln -s /etc/sv/acpid /etc/runit/runsvdir/default/
+  ln -s /etc/sv/greetd /etc/runit/runsvdir/default
 
   echo -e -n "\nAdding needed dracut configuration files...\n"
   echo -e "hostonly=yes\nhostonly_cmdline=yes" >>/etc/dracut.conf.d/00-hostonly.conf
@@ -252,6 +253,8 @@ EOF
       press_any_key_to_continue
     else
       sed -i "/#TIMEZONE=/s|.*|TIMEZONE=\"$user_timezone\"|" /etc/rc.conf
+      grep -q '^[#]*CGROUP_MODE=' /etc/rc.conf && sed -i 's|^[#]*CGROUP_MODE=.*|CGROUP_MODE=unified|' /etc/rc.conf || echo 'CGROUP_MODE=unified' >> /etc/rc.conf
+      sed -i "s/^command.*/command = \"tuigreet -r --power-shutdown 'doas shutdown -h now' --power-reboot 'doas shutdown -r now' --cmd 'dbus-run-session niri --session'\"/" /etc/greetd/config.toml
       echo -e -n "\n${GREEN_LIGHT}Timezone set to: $user_timezone.${NORMAL}\n\n"
       press_any_key_to_continue
       clear
@@ -783,7 +786,7 @@ function create_user {
               echo -e -n "\nAdding new user ${BLUE_LIGHT}$newuser${NORMAL} and giving access to groups:\n"
               echo -e -n "kmem, wheel, tty, tape, daemon, floppy, disk, lp, dialout, audio, video,"
               echo -e -n "\nutmp, cdrom, optical, mail, storage, scanner, kvm, input, plugdev, users.\n"
-              useradd --create-home --groups kmem,wheel,tty,tape,daemon,floppy,disk,lp,dialout,audio,video,utmp,cdrom,optical,mail,storage,scanner,kvm,input,plugdev,users "$newuser"
+              useradd --create-home --groups kmem,wheel,tty,tape,daemon,floppy,disk,lp,dialout,audio,video,utmp,cdrom,optical,mail,storage,network,_seatd,scanner,kvm,input,plugdev,users "$newuser"
               echo -e -n "\n${GREEN_LIGHT}User ${newuser} successfully created.${NORMAL}\n\n"
               press_any_key_to_continue
               newuser_yn="y"
