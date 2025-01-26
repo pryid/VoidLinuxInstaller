@@ -74,10 +74,10 @@ then download the needed file:
 
 ``` bash
 # For wget
-wget https://raw.githubusercontent.com/Le0xFF/VoidLinuxInstaller/main/vli.sh -O $HOME/vli.sh
+wget https://raw.githubusercontent.com/pryid/VoidLinuxInstaller/main/vli.sh -O $HOME/vli.sh
 
 # For curl
-curl -o $HOME/vli.sh https://raw.githubusercontent.com/Le0xFF/VoidLinuxInstaller/main/vli.sh
+curl -o $HOME/vli.sh https://raw.githubusercontent.com/pryid/VoidLinuxInstaller/main/vli.sh
 ```
 
 then make it executable:

@@ -1,12 +1,8 @@
 #! /bin/bash
 
-# Author:      Le0xFF
-# Script name: vli.sh
-# Github repo: https://github.com/Le0xFF/VoidLinuxInstaller
-#
-# Description: My first attempt at creating a bash script, trying to converting my gist into a bash script. Bugs are more than expected.
-#              https://gist.github.com/Le0xFF/ff0e3670c06def675bb6920fe8dd64a3
-#
+# original author: Le0xFF
+# script name: vli.sh
+# original github repo: https://github.com/Le0xFF/VoidLinuxInstaller
 
 # Catch kill signals
 
@@ -185,8 +181,8 @@ function initial_configuration {
   chown root:root /
   chmod 755 /
 
-  echo -e -n "\nEnabling wheel group to use sudo...\n"
-  echo "%wheel ALL=(ALL) ALL" >/etc/sudoers.d/10-wheel
+  echo -e -n "\nEnabling wheel group to use doas...\n"
+  echo "permit persist :wheel" > /etc/doas.conf
 
   echo -e -n "\nExporting variables that will be used for fstab...\n"
   export LUKS_UUID=$(blkid -s UUID -o value "$root_partition")
@@ -217,6 +213,14 @@ EOF
   echo -e -n "\nEnabling internet service at first boot...\n"
   ln -s /etc/sv/dbus /etc/runit/runsvdir/default/
   ln -s /etc/sv/NetworkManager /etc/runit/runsvdir/default/
+  ln -s /etc/sv/chronyd /etc/runit/runsvdir/default/
+  ln -s /etc/sv/NetworkManager /etc/runit/runsvdir/default/
+  ln -s /etc/sv/dbus /etc/runit/runsvdir/default/
+  ln -s /etc/sv/tlp /etc/runit/runsvdir/default/
+  ln -s /etc/sv/turnstiled /etc/runit/runsvdir/default/
+  ln -s /etc/sv/polkitd /etc/runit/runsvdir/default/
+  ln -s /etc/sv/seatd /etc/runit/runsvdir/default/
+  ln -s /etc/sv/acpid /etc/runit/runsvdir/default/
 
   echo -e -n "\nAdding needed dracut configuration files...\n"
   echo -e "hostonly=yes\nhostonly_cmdline=yes" >>/etc/dracut.conf.d/00-hostonly.conf
@@ -2435,12 +2439,17 @@ function format_create_install_system {
             echo -e -n "\n${RED_LIGHT}Something went wrong, killing script...${NORMAL}\n\n"
             kill_script
           fi
-          if ! XBPS_ARCH="$ARCH" xbps-install -Suvy -r /mnt -R "$REPO" base-system btrfs-progs cryptsetup grub-x86_64-efi \
-            efibootmgr lvm2 grub-btrfs grub-btrfs-runit NetworkManager bash-completion nano gcc apparmor git curl \
-            util-linux tar coreutils binutils xtools fzf xmirror plocate ictree xkeyboard-config ckbcomp void-repo-nonfree; then
+          if ! XBPS_ARCH="$ARCH" xbps-install -Suvy -r /mnt -R "$REPO" \
+            base-system btrfs-progs acpi alsa-pipewire alsa-utils brightnessctl btop cryptsetup curl dbus elinks fastfetch \
+            fish-shell flatpak fuzzel gnome-keyring grub-x86_64-efi gvfs htop intel-video-accel kitty lvm2 mako mesa-dri \
+            nano nautilus niri openbsd-netcat opendoas pavucontrol pipewire podman polkit-gnome rsync screen seatd swaylock \
+            tlp tree tuigreet turnstile udisks2 vulkan-loader wget xdg-desktop-portal-gnome xdg-user-dirs xdg-utils \
+            terminus-font git NetworkManager unzip chrony efibootmgr grub-btrfs grub-btrfs-runit bash-completion apparmor \
+            util-linux coreutils binutils xtools fzf xmirror void-repo-nonfree; then
             echo -e -n "\n${RED_LIGHT}Something went wrong, killing script...${NORMAL}\n\n"
             kill_script
           fi
+
           if [[ "$XBPS_ARCH" == "x86_64" ]]; then
             if ! XBPS_ARCH="$ARCH" xbps-install -Suvy -r /mnt -R "$REPO" void-repo-multilib void-repo-multilib-nonfree; then
               echo -e -n "\n${RED_LIGHT}Something went wrong, killing script...${NORMAL}\n\n"
