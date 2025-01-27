@@ -2448,7 +2448,7 @@ function format_create_install_system {
             nano nautilus niri openbsd-netcat opendoas pavucontrol pipewire podman polkit-gnome rsync screen seatd swaylock \
             tlp tree tuigreet turnstile udisks2 vulkan-loader wget xdg-desktop-portal-gnome xdg-user-dirs xdg-utils \
             terminus-font git NetworkManager unzip chrony efibootmgr grub-btrfs grub-btrfs-runit bash-completion apparmor \
-            util-linux coreutils binutils xtools fzf xmirror void-repo-nonfree; then
+            util-linux coreutils binutils xtools fzf xmirror void-repo-nonfree micro; then
             echo -e -n "\n${RED_LIGHT}Something went wrong, killing script...${NORMAL}\n\n"
             kill_script
           fi
